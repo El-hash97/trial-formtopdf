@@ -6,11 +6,10 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
+import { nativeSelectClass } from "../../lib/native-select-class";
+import { cn } from "../../lib/utils";
 
 const JENIS_OPTIONS = ["Material", "Mesin", "Metode", "Man", "Lain-lain"] as const;
-
-const SELECT_CLASS =
-  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function HeaderFields() {
   const { register, watch } = useFormContext<HenkatenFormDataInput>();
@@ -27,7 +26,7 @@ export function HeaderFields() {
 
       <div className="space-y-1.5">
         <Label htmlFor="jenisHenkaten">Jenis Henkaten</Label>
-        <select id="jenisHenkaten" {...register("jenisHenkaten")} className={SELECT_CLASS}>
+        <select id="jenisHenkaten" {...register("jenisHenkaten")} className={nativeSelectClass}>
           {JENIS_OPTIONS.map((option) => (
             <option key={option} value={option}>{option}</option>
           ))}
@@ -65,7 +64,7 @@ export function HeaderFields() {
             id="shiftCount"
             aria-label="Jumlah/Periode Shift"
             {...register("shiftCount", { valueAsNumber: true })}
-            className="h-10 w-auto rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(nativeSelectClass, "w-auto")}
           >
             <option value={1}>1 Shift</option>
             <option value={2}>2 Shift</option>

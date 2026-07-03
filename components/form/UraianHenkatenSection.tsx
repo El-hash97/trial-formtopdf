@@ -8,6 +8,8 @@ import { DateRangeToggle } from "./DateRangeToggle";
 import { PicInput } from "./PicInput";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { nativeSelectClass } from "../../lib/native-select-class";
+import { cn } from "../../lib/utils";
 
 const LINE_OPTIONS = [
   "Melting",
@@ -43,7 +45,7 @@ export function UraianHenkatenSection({ index, onRemove }: UraianHenkatenSection
         <div className="flex items-center justify-between">
           <select
             {...register(`${base}.line`)}
-            className="h-9 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className={cn(nativeSelectClass, "w-auto")}
           >
             {LINE_OPTIONS.map((option) => (
               <option key={option} value={option}>{option}</option>
