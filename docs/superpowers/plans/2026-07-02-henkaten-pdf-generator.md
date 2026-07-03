@@ -67,7 +67,8 @@
     "@tiptap/react": "^2.5.0",
     "@tiptap/starter-kit": "^2.5.0",
     "@tiptap/pm": "^2.5.0",
-    "tiptap-extension-resize-image": "^1.2.1",
+    "@tiptap/extension-image": "2.5.0",
+    "tiptap-extension-resize-image": "1.2.1",
     "sanitize-html": "^2.13.0",
     "browser-image-compression": "^2.0.2",
     "puppeteer-core": "^22.13.0",
@@ -1257,8 +1258,10 @@ git commit -m "feat: add /api/generate-pdf route with puppeteer PDF rendering"
 // lib/image-compress.test.ts
 import { describe, it, expect, vi } from "vitest";
 
-const imageCompressionMock = vi.fn();
-const getDataUrlFromFileMock = vi.fn();
+const { imageCompressionMock, getDataUrlFromFileMock } = vi.hoisted(() => ({
+  imageCompressionMock: vi.fn(),
+  getDataUrlFromFileMock: vi.fn(),
+}));
 
 vi.mock("browser-image-compression", () => ({
   default: Object.assign(imageCompressionMock, { getDataUrlFromFile: getDataUrlFromFileMock }),
@@ -1615,7 +1618,7 @@ git commit -m "feat: add DateRangeToggle component"
 - Test: `components/form/RichTextEditor.test.tsx`
 
 **Interfaces:**
-- Consumes: `compressImageToDataUrl` (Task 7), `@tiptap/react`, `@tiptap/starter-kit`, `tiptap-extension-resize-image` (npm packages).
+- Consumes: `compressImageToDataUrl` (Task 7), `@tiptap/react`, `@tiptap/starter-kit`, `@tiptap/extension-image` (peer dep required by the resize extension), `tiptap-extension-resize-image` (npm packages).
 - Produces: `RichTextEditor({ value: string, onChange: (html: string) => void, placeholder?: string })` (used by Task 12's `UraianHenkatenSection` and Task 13's `HenkatenForm` for Background).
 
 **Note:** Tiptap/ProseMirror require DOM APIs (`document.createRange`, `getClientRects`, etc.) that jsdom does not fully implement, so real ProseMirror behavior cannot be reliably unit-tested. This task mocks `@tiptap/react` to test only the component's own glue code (the upload button wiring). Full editing/resizing behavior is verified manually in Task 14's end-to-end check.
@@ -1628,9 +1631,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const setImageMock = vi.fn();
-const runMock = vi.fn(() => ({}));
-const chainMock = vi.fn();
+const { setImageMock, runMock, chainMock } = vi.hoisted(() => ({
+  setImageMock: vi.fn(),
+  runMock: vi.fn(() => ({})),
+  chainMock: vi.fn(),
+}));
 
 vi.mock("@tiptap/react", () => ({
   useEditor: () =>
@@ -1707,6 +1712,7 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [StarterKit, ResizeImage.configure({ inline: true })],
     content: value,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -2577,6 +2583,8 @@ git commit -m "feat: wire HenkatenForm into the home page"
 ---
 
 ## Post-Plan Notes
+
+- **Install notes discovered during implementation:** `npm install` needs `--legacy-peer-deps` (tiptap-extension-resize-image's peer range still trips npm's ERESOLVE). `@testing-library/dom` must be installed explicitly as a devDependency (peer of `@testing-library/react`, not auto-installed). `@tiptap/extension-image` (pinned `2.5.0`) must be installed explicitly — `tiptap-extension-resize-image` imports it directly but doesn't declare it as a resolvable dependency. `RichTextEditor`'s `useEditor` call needs `immediatelyRender: false` to avoid a Tiptap SSR/hydration warning under Next.js App Router.
 
 - The PDF layout in Task 5 is a faithful first pass at the original form's structure (header/approval grid, info table, Uraian Henkaten table, static bottom boilerplate) built with hand-written CSS rather than pixel-measured from the scanned photos. After Task 14's manual verification, expect to spend a follow-up pass nudging `lib/pdf-template/pdf-styles.ts` spacing/column widths once the actual generated PDF is compared side-by-side with the two reference photos.
 - When the real Toyota logo file becomes available, drop it into `public/logo.png` and replace the `.logo-box` placeholder `<div>LOGO</div>` in `renderHenkatenHtml.ts` with an `<img src="/logo.png" />` (or embed it as a base64 constant, since the API route does not have network access to `/public` at render time — reading it from disk via `fs.readFileSync` and converting to a data URI is the simplest approach). No other code changes needed.
