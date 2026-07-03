@@ -8,6 +8,7 @@ import { DateRangeToggle } from "./DateRangeToggle";
 import { PicInput } from "./PicInput";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { Label } from "../ui/label";
 import { nativeSelectClass } from "../../lib/native-select-class";
 import { cn } from "../../lib/utils";
 
@@ -79,7 +80,10 @@ export function UraianHenkatenSection({ index, onRemove }: UraianHenkatenSection
           onEndChange={(value) => setValue(`${base}.waktuEnd`, value)}
         />
 
-        <PicInput value={pic} onChange={(next) => setValue(`${base}.pic`, next)} />
+        <div className="space-y-1.5">
+          <Label>PIC</Label>
+          <PicInput value={pic} onChange={(next) => setValue(`${base}.pic`, next)} />
+        </div>
       </CardContent>
     </Card>
   );
