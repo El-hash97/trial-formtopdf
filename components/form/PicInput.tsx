@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type KeyboardEvent } from "react";
+import { Badge } from "../ui/badge";
 
 interface PicInputProps {
   value: string[];
@@ -29,22 +30,19 @@ export function PicInput({ value, onChange }: PicInputProps) {
   }
 
   return (
-    <div className="flex flex-wrap gap-1 rounded border border-gray-300 p-2">
+    <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-input bg-background p-2 focus-within:ring-2 focus-within:ring-ring">
       {value.map((name, index) => (
-        <span
-          key={`${name}-${index}`}
-          className="flex items-center gap-1 rounded bg-gray-200 px-2 py-0.5 text-sm"
-        >
+        <Badge key={`${name}-${index}`} className="gap-1 py-1">
           {name}
           <button
             type="button"
             aria-label={`Hapus ${name}`}
             onClick={() => removeName(index)}
-            className="text-gray-500 hover:text-red-600"
+            className="text-muted-foreground hover:text-destructive"
           >
             &times;
           </button>
-        </span>
+        </Badge>
       ))}
       <input
         type="text"
@@ -53,7 +51,7 @@ export function PicInput({ value, onChange }: PicInputProps) {
         onKeyDown={handleKeyDown}
         onBlur={addName}
         placeholder="Ketik nama, Enter untuk tambah"
-        className="min-w-[140px] flex-1 border-none text-sm outline-none"
+        className="min-w-[140px] flex-1 border-none bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       />
     </div>
   );
