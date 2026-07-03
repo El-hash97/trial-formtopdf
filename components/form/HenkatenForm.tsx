@@ -3,6 +3,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import {
   henkatenFormSchema,
   getLineSectionWarnings,
@@ -13,6 +14,9 @@ import { HeaderFields } from "./HeaderFields";
 import { ApprovalFields } from "./ApprovalFields";
 import { LineSectionList } from "./LineSectionList";
 import { RichTextEditor } from "./RichTextEditor";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Alert, AlertDescription } from "../ui/alert";
 
 const DEFAULT_VALUES: HenkatenFormDataInput = {
   judul: "",
@@ -79,40 +83,69 @@ export function HenkatenForm() {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="mx-auto max-w-3xl space-y-6 p-6">
-        <HeaderFields />
-        <ApprovalFields />
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Informasi Umum</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HeaderFields />
+          </CardContent>
+        </Card>
 
-        <div>
-          <label className="block text-sm font-medium">Background</label>
-          <RichTextEditor
-            value={backgroundHtml}
-            onChange={(html) => methods.setValue("background.descriptionHtml", html)}
-            placeholder="Deskripsi background"
-          />
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Approval</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ApprovalFields />
+          </CardContent>
+        </Card>
 
-        <LineSectionList />
+        <Card>
+          <CardHeader>
+            <CardTitle>Background</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RichTextEditor
+              value={backgroundHtml}
+              onChange={(html) => methods.setValue("background.descriptionHtml", html)}
+              placeholder="Deskripsi background"
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Uraian Henkaten per Line</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LineSectionList />
+          </CardContent>
+        </Card>
 
         {warnings.length > 0 && (
-          <ul className="rounded border border-yellow-400 bg-yellow-50 p-3 text-sm text-yellow-800" role="status">
-            {warnings.map((warning) => (
-              <li key={warning}>{warning}</li>
-            ))}
-          </ul>
+          <Alert role="status">
+            <AlertDescription>
+              <ul>
+                {warnings.map((warning) => (
+                  <li key={warning}>{warning}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
         )}
 
         {submitError && (
-          <p role="alert" className="text-sm text-red-600">{submitError}</p>
+          <Alert variant="destructive" role="alert">
+            <AlertDescription>{submitError}</AlertDescription>
+          </Alert>
         )}
 
-        <button
-          type="submit"
-          disabled={isGenerating}
-          className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
-        >
+        <Button type="submit" disabled={isGenerating} className="w-full sm:w-auto">
+          {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
           {isGenerating ? "Membuat PDF..." : "Generate PDF"}
-        </button>
+        </Button>
       </form>
     </FormProvider>
   );
