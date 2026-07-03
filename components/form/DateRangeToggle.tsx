@@ -1,5 +1,8 @@
 "use client";
 
+import { Checkbox } from "../ui/checkbox";
+import { Input } from "../ui/input";
+
 interface DateRangeToggleProps {
   mode: "single" | "range";
   start: string;
@@ -20,37 +23,36 @@ export function DateRangeToggle({
   return (
     <div className="space-y-2">
       <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={mode === "range"}
           onChange={(event) => onModeChange(event.target.checked ? "range" : "single")}
         />
         Rentang tanggal
       </label>
       {mode === "single" ? (
-        <input
+        <Input
           type="date"
           aria-label="Tanggal"
           value={start}
           onChange={(event) => onStartChange(event.target.value)}
-          className="rounded border border-gray-300 px-2 py-1 text-sm"
+          className="w-auto text-sm"
         />
       ) : (
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="date"
             aria-label="Tanggal mulai"
             value={start}
             onChange={(event) => onStartChange(event.target.value)}
-            className="rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-auto text-sm"
           />
-          <span>-</span>
-          <input
+          <span className="text-muted-foreground">-</span>
+          <Input
             type="date"
             aria-label="Tanggal selesai"
             value={end}
             onChange={(event) => onEndChange(event.target.value)}
-            className="rounded border border-gray-300 px-2 py-1 text-sm"
+            className="w-auto text-sm"
           />
         </div>
       )}
