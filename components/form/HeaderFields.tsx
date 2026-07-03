@@ -2,8 +2,15 @@
 
 import { useFormContext } from "react-hook-form";
 import type { HenkatenFormDataInput } from "../../lib/form-schema";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
 
 const JENIS_OPTIONS = ["Material", "Mesin", "Metode", "Man", "Lain-lain"] as const;
+
+const SELECT_CLASS =
+  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function HeaderFields() {
   const { register, watch } = useFormContext<HenkatenFormDataInput>();
@@ -12,86 +19,82 @@ export function HeaderFields() {
   const warnaShift = watch("warnaShift");
 
   return (
-    <fieldset className="space-y-3">
-      <div>
-        <label htmlFor="judul" className="block text-sm font-medium">Judul Trial/Henkaten</label>
-        <input id="judul" {...register("judul")} className="mt-1 w-full rounded border border-gray-300 px-2 py-1" />
+    <fieldset className="space-y-4">
+      <div className="space-y-1.5">
+        <Label htmlFor="judul">Judul Trial/Henkaten</Label>
+        <Input id="judul" {...register("judul")} />
       </div>
 
-      <div>
-        <label htmlFor="jenisHenkaten" className="block text-sm font-medium">Jenis Henkaten</label>
-        <select
-          id="jenisHenkaten"
-          {...register("jenisHenkaten")}
-          className="mt-1 w-full rounded border border-gray-300 px-2 py-1"
-        >
+      <div className="space-y-1.5">
+        <Label htmlFor="jenisHenkaten">Jenis Henkaten</Label>
+        <select id="jenisHenkaten" {...register("jenisHenkaten")} className={SELECT_CLASS}>
           {JENIS_OPTIONS.map((option) => (
             <option key={option} value={option}>{option}</option>
           ))}
         </select>
         {jenisHenkaten === "Lain-lain" && (
-          <input
+          <Input
             {...register("jenisHenkatenManual")}
             placeholder="Tulis jenis henkaten"
-            className="mt-2 w-full rounded border border-gray-300 px-2 py-1"
+            className="mt-2"
           />
         )}
       </div>
 
-      <div>
-        <label htmlFor="tujuan" className="block text-sm font-medium">Tujuan / Pelaksanaan Henkaten</label>
-        <textarea id="tujuan" {...register("tujuan")} rows={3} className="mt-1 w-full rounded border border-gray-300 px-2 py-1" />
+      <div className="space-y-1.5">
+        <Label htmlFor="tujuan">Tujuan / Pelaksanaan Henkaten</Label>
+        <Textarea id="tujuan" {...register("tujuan")} rows={3} />
       </div>
 
-      <div className="flex gap-2">
-        <div>
-          <label htmlFor="waktuMulai" className="block text-sm font-medium">Waktu Mulai</label>
-          <input id="waktuMulai" type="date" {...register("waktuMulai")} className="mt-1 rounded border border-gray-300 px-2 py-1" />
+      <div className="flex gap-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="waktuMulai">Waktu Mulai</Label>
+          <Input id="waktuMulai" type="date" {...register("waktuMulai")} className="w-auto" />
         </div>
-        <div>
-          <label htmlFor="waktuSelesai" className="block text-sm font-medium">Waktu Selesai</label>
-          <input id="waktuSelesai" type="date" {...register("waktuSelesai")} className="mt-1 rounded border border-gray-300 px-2 py-1" />
+        <div className="space-y-1.5">
+          <Label htmlFor="waktuSelesai">Waktu Selesai</Label>
+          <Input id="waktuSelesai" type="date" {...register("waktuSelesai")} className="w-auto" />
         </div>
       </div>
 
-      <div>
+      <div className="space-y-1.5">
         <span className="block text-sm font-medium">Jumlah/Periode</span>
-        <div className="mt-1 flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <label htmlFor="shiftCount" className="sr-only">Jumlah/Periode Shift</label>
           <select
             id="shiftCount"
             aria-label="Jumlah/Periode Shift"
             {...register("shiftCount", { valueAsNumber: true })}
-            className="rounded border border-gray-300 px-2 py-1"
+            className="h-10 w-auto rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <option value={1}>1 Shift</option>
             <option value={2}>2 Shift</option>
           </select>
-          <label className="flex items-center gap-1 text-sm">
-            <input type="checkbox" value="White" {...register("warnaShift")} /> White
+          <label className="flex items-center gap-1.5 text-sm">
+            <Checkbox value="White" {...register("warnaShift")} /> White
           </label>
-          <label className="flex items-center gap-1 text-sm">
-            <input type="checkbox" value="Red" {...register("warnaShift")} /> Red
+          <label className="flex items-center gap-1.5 text-sm">
+            <Checkbox value="Red" {...register("warnaShift")} /> Red
           </label>
         </div>
-        <p className="mt-1 text-xs text-gray-500" data-testid="jumlah-periode-preview">
+        <p className="text-xs text-muted-foreground" data-testid="jumlah-periode-preview">
           {shiftCount} Shift{warnaShift?.length ? ` (${warnaShift.join(" ")})` : ""}
         </p>
       </div>
 
-      <div>
-        <label htmlFor="bendaKerja" className="block text-sm font-medium">Benda Kerja</label>
-        <input id="bendaKerja" {...register("bendaKerja")} className="mt-1 w-full rounded border border-gray-300 px-2 py-1" />
+      <div className="space-y-1.5">
+        <Label htmlFor="bendaKerja">Benda Kerja</Label>
+        <Input id="bendaKerja" {...register("bendaKerja")} />
       </div>
 
-      <div>
-        <label htmlFor="lineHeader" className="block text-sm font-medium">Line</label>
-        <input id="lineHeader" {...register("lineHeader")} className="mt-1 w-full rounded border border-gray-300 px-2 py-1" />
+      <div className="space-y-1.5">
+        <Label htmlFor="lineHeader">Line</Label>
+        <Input id="lineHeader" {...register("lineHeader")} />
       </div>
 
-      <div>
-        <label htmlFor="proses" className="block text-sm font-medium">Proses</label>
-        <input id="proses" {...register("proses")} className="mt-1 w-full rounded border border-gray-300 px-2 py-1" />
+      <div className="space-y-1.5">
+        <Label htmlFor="proses">Proses</Label>
+        <Input id="proses" {...register("proses")} />
       </div>
     </fieldset>
   );
