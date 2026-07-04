@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { henkatenFormSchema, getLineSectionWarnings, type HenkatenFormDataInput } from "./form-schema";
+import {
+  henkatenFormSchema,
+  getLineSectionWarnings,
+  buildPreviewSafeData,
+  type HenkatenFormDataInput,
+} from "./form-schema";
 
 function baseData(): HenkatenFormDataInput {
   return {
@@ -106,5 +111,62 @@ describe("getLineSectionWarnings", () => {
     ];
     const warnings = getLineSectionWarnings(data);
     expect(warnings).toContain("Section Line ke-1 (Melting) belum ada PIC.");
+  });
+});
+
+describe("buildPreviewSafeData", () => {
+  it("fills judul, lineHeader, and proses with placeholders when empty", () => {
+    const data = baseData();
+    data.judul = "";
+    data.lineHeader = "";
+    data.proses = "";
+    const safe = buildPreviewSafeData(data);
+    expect(safe.judul).toBe("(Preview)");
+    expect(safe.lineHeader).toBe("-");
+    expect(safe.proses).toBe("-");
+  });
+
+  it("fills waktuMulai with today's ISO date and waktuSelesai to match when both empty", () => {
+    const data = baseData();
+    data.waktuMulai = "";
+    data.waktuSelesai = "";
+    const safe = buildPreviewSafeData(data);
+    const todayISO = new Date().toISOString().slice(0, 10);
+    expect(safe.waktuMulai).toBe(todayISO);
+    expect(safe.waktuSelesai).toBe(todayISO);
+  });
+
+  it("keeps waktuSelesai equal to waktuMulai when only waktuSelesai is empty", () => {
+    const data = baseData();
+    data.waktuMulai = "2025-09-13";
+    data.waktuSelesai = "";
+    const safe = buildPreviewSafeData(data);
+    expect(safe.waktuSelesai).toBe("2025-09-13");
+  });
+
+  it("leaves already-filled fields untouched", () => {
+    const data = baseData();
+    const safe = buildPreviewSafeData(data);
+    expect(safe).toEqual(data);
+  });
+
+  it("always produces a payload that passes henkatenFormSchema", () => {
+    const data = baseData();
+    data.judul = "";
+    data.waktuMulai = "";
+    data.waktuSelesai = "";
+    data.lineHeader = "";
+    data.proses = "";
+    const safe = buildPreviewSafeData(data);
+    const result = henkatenFormSchema.safeParse(safe);
+    expect(result.success).toBe(true);
+  });
+
+  it("does not mutate the input object", () => {
+    const data = baseData();
+    data.judul = "";
+    const original = { ...data };
+    buildPreviewSafeData(data);
+    expect(data).toEqual(original);
   });
 });

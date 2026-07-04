@@ -2,6 +2,7 @@ import type { HenkatenFormDataInput, LineSectionInput } from "../form-schema";
 import { escapeHtml, sanitizeRichText } from "../html-safety";
 import { formatDateID, formatDateRangeLabel, formatJumlahPeriode } from "../format-helpers";
 import { pdfStyles } from "./pdf-styles";
+import { getLogoDataUri } from "./logo";
 
 const JENIS_OPTIONS = ["Material", "Mesin", "Metode", "Man", "Lain-lain"] as const;
 
@@ -87,6 +88,7 @@ export function renderHenkatenHtml(data: HenkatenFormDataInput): string {
   const waktuLabel = formatDateRangeLabel(data.waktuMulai, data.waktuSelesai);
   const jumlahPeriode = formatJumlahPeriode(data.shiftCount, data.warnaShift);
   const lineSectionsHtml = data.lineSections.map(renderLineSection).join("");
+  const logoDataUri = getLogoDataUri();
 
   return `<!DOCTYPE html>
 <html lang="id">
@@ -97,7 +99,7 @@ export function renderHenkatenHtml(data: HenkatenFormDataInput): string {
 <body>
   <div class="doc">
     <div class="header-top">
-      <div class="logo-box">LOGO</div>
+      <div class="logo-box">${logoDataUri ? `<img src="${logoDataUri}" alt="Logo" class="logo-img" />` : "LOGO"}</div>
       <div class="title-box">
         <div class="company">PT. TMMIN &mdash; Casting Division</div>
         <div class="title">LEMBAR PERMOHONAN MELAKUKAN HENKATEN</div>

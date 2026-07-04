@@ -115,4 +115,9 @@ describe("renderHenkatenHtml", () => {
     expect(html).toContain("Engineering Quality");
     expect(html).toContain("Copy untuk yang berhubungan");
   });
+
+  it("falls back to the LOGO text placeholder when no logo file is present", () => {
+    const html = renderHenkatenHtml(baseData());
+    expect(html).toContain('<div class="logo-box">LOGO</div>');
+  });
 });

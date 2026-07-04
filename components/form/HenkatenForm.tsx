@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import {
   henkatenFormSchema,
   getLineSectionWarnings,
+  buildPreviewSafeData,
   type HenkatenFormDataInput,
 } from "../../lib/form-schema";
 import { buildFileName } from "../../lib/format-helpers";
@@ -50,6 +51,7 @@ export function HenkatenForm() {
   const [warnings, setWarnings] = useState<string[]>([]);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
 
   async function onSubmit(data: HenkatenFormDataInput) {
     setSubmitError(null);
@@ -76,6 +78,30 @@ export function HenkatenForm() {
       setSubmitError(error instanceof Error ? error.message : "Gagal generate PDF");
     } finally {
       setIsGenerating(false);
+    }
+  }
+
+  async function handlePreview() {
+    setSubmitError(null);
+    setIsPreviewing(true);
+    try {
+      const data = buildPreviewSafeData(methods.getValues());
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error ?? "Gagal generate PDF");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Gagal generate PDF");
+    } finally {
+      setIsPreviewing(false);
     }
   }
 
@@ -142,10 +168,22 @@ export function HenkatenForm() {
           </Alert>
         )}
 
-        <Button type="submit" disabled={isGenerating} className="w-full sm:w-auto">
-          {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isGenerating ? "Membuat PDF..." : "Generate PDF"}
-        </Button>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handlePreview}
+            disabled={isPreviewing || isGenerating}
+            className="w-full sm:w-auto"
+          >
+            {isPreviewing && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isPreviewing ? "Membuat Preview..." : "Preview PDF"}
+          </Button>
+          <Button type="submit" disabled={isGenerating || isPreviewing} className="w-full sm:w-auto">
+            {isGenerating && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isGenerating ? "Membuat PDF..." : "Generate PDF"}
+          </Button>
+        </div>
       </form>
     </FormProvider>
   );

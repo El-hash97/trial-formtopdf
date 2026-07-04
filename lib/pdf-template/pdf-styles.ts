@@ -5,6 +5,7 @@ export const pdfStyles = `
   .doc { border: 1px solid #000; }
   .header-top { display: flex; border-bottom: 1px solid #000; }
   .logo-box { width: 90px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-right: 1px solid #000; font-size: 9px; color: #888; }
+  .logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
   .title-box { flex: 1; padding: 6px 8px; }
   .title-box .company { font-weight: bold; font-size: 11px; }
   .title-box .title { font-weight: bold; font-size: 12px; margin-top: 4px; }

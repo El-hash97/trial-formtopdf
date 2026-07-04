@@ -70,3 +70,19 @@ export function getLineSectionWarnings(data: HenkatenFormDataInput): string[] {
   });
   return warnings;
 }
+
+export function buildPreviewSafeData(data: HenkatenFormDataInput): HenkatenFormDataInput {
+  const waktuMulai = data.waktuMulai.trim() !== ""
+    ? data.waktuMulai
+    : new Date().toISOString().slice(0, 10);
+  const waktuSelesai = data.waktuSelesai.trim() !== "" ? data.waktuSelesai : waktuMulai;
+
+  return {
+    ...data,
+    judul: data.judul.trim() !== "" ? data.judul : "(Preview)",
+    waktuMulai,
+    waktuSelesai,
+    lineHeader: data.lineHeader.trim() !== "" ? data.lineHeader : "-",
+    proses: data.proses.trim() !== "" ? data.proses : "-",
+  };
+}
