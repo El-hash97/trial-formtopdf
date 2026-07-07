@@ -7,8 +7,9 @@ export async function generatePdfBuffer(html: string): Promise<Buffer> {
     const puppeteerCore = await import("puppeteer-core");
     browser = await puppeteerCore.launch({
       args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: true,
+      headless: chromium.headless,
     });
   } else {
     const puppeteer = await import("puppeteer");
