@@ -7,9 +7,8 @@ export async function generatePdfBuffer(html: string): Promise<Buffer> {
     const puppeteerCore = await import("puppeteer-core");
     browser = await puppeteerCore.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: true,
     });
   } else {
     const puppeteer = await import("puppeteer");
@@ -18,7 +17,7 @@ export async function generatePdfBuffer(html: string): Promise<Buffer> {
 
   try {
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: "load" });
     const pdfUint8 = await page.pdf({ format: "A4", printBackground: true });
     return Buffer.from(pdfUint8);
   } finally {
